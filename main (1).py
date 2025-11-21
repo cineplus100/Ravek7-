@@ -26,6 +26,38 @@ intents.guilds = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 INICIO_BOT = datetime.now(timezone.utc)
 
+#SUBIU DE CARGO#
+@client.event
+async def on_member_update(before, after):
+    # Se nenhum cargo mudou, sai
+    if before.roles == after.roles:
+        return
+
+    # Pega os cargos antigos e novos
+    before_roles = set(before.roles)
+    after_roles = set(after.roles)
+
+    # Detecta cargo ganho
+    gained_roles = after_roles - before_roles
+
+    if gained_roles:
+        new_role = gained_roles.pop()  # Cargo novo
+        old_role = before.top_role     # Cargo anterior mais alto
+
+        # Canal onde será enviado
+        channel = discord.utils.get(after.guild.text_channels, name="promocoes-rv7")
+        
+        if channel:
+            await channel.send(
+                f"🎉 **Parabéns, {after.mention}!** 🎉\n\n"
+                f"Por evoluir para esse cargo incrível, você merece!\n"
+                f"**Seu cargo antigo:** {old_role.mention}\n"
+                f"**Seu cargo atual:** {new_role.mention}\n\n"
+                f"Continue assim, o topo te espera! 🚀"
+            )
+
+
+
 # ---------------- DATABASE ----------------
 DB_PATH = "database.json"
 
